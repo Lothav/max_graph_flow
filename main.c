@@ -16,9 +16,31 @@ typedef struct Tree {
 	int edges_size;
 } Tree;
 
+int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** path){
+	int i, r_value, to;
+	if(tree[tree_index].type == TYPE_CLIENT){
+		*path = malloc((recursion_index+1) * sizeof(int));
+		(*path)[recursion_index] = tree_index;
+		return tree_index;
+	}
+	if(tree[tree_index].edges_size){
+		if(recursion_index)
+			for(i = 0; i < tree[tree_index].edges_size; i++){
+				to = tree[tree_index].edges[i].to;
+				r_value = breadthFirstSearch(tree, to, recursion_index-1, path);
+				if(r_value == to && path != NULL){
+					(*path)[recursion_index] = tree_index;
+					return tree_index;
+				}
+			}
+	}
+	return -1;
+}
+
 int main() {
 	int V, E, F, C, u, v, m;
-	int i;
+	int i, j;
+	int *path = NULL;
 	int edge_index;
 	scanf("%d %d %d %d", &V, &E, &F, &C);
 	Tree *tree = malloc(V * sizeof(Tree));
@@ -42,6 +64,15 @@ int main() {
 		scanf("%d", &u);
 		tree[u].type = TYPE_CLIENT;
 	}
+
+	for(i = 0; i < V; i++) {
+		for(j = 1; j <= V; j++) {
+			if(tree[i].type == TYPE_FRANCHISE){
+				breadthFirstSearch(tree, i, j, &path);
+			}
+		}
+	}
+
 	return EXIT_SUCCESS;
 }
 
