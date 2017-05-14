@@ -37,12 +37,14 @@ int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** p
 	return -1;
 }
 
-int getMinValue(Tree *tree, int size){
-	int min_value = -1, i, j;
-	for(i = 1; i < size; i++){
-		for(j = 0; j < tree[i].edges_size; j++) {
-			if(tree[i-1].edges[j].to == i){
-				min_value = tree[i-1].edges[j].size < min_value || min_value == -1 ? tree[i-1].edges[j].size : min_value;
+int getMinValue(Tree *tree, int size, int **path){
+	int min_value = -1, i, j, index, b_index;
+	for(i = size; i; i--){
+		index = (*path)[i-1];
+		b_index = (*path)[i];
+		for(j = 0; j < tree[b_index].edges_size; j++) {
+			if(tree[b_index].edges[j].to == index){
+				min_value = tree[b_index].edges[j].size < min_value || min_value == -1 ? tree[b_index].edges[j].size : min_value;
 				continue;
 			}
 		}
@@ -81,7 +83,8 @@ int main() {
 		for(j = 1; j <= V; j++) {
 			if(tree[i].type == TYPE_FRANCHISE) {
 				if(breadthFirstSearch(tree, i, j, &path) != -1){
-					min_value = getMinValue(tree, j);
+					min_value = getMinValue(tree, j, &path);
+
 					for(k = 1; k < j; k++) {
 						for(l = 0; l < tree[k].edges_size; l++) {
 							if(tree[k-1].edges[l].to == k){
@@ -91,6 +94,8 @@ int main() {
 									tree[k-1].edges = realloc(tree[k-1].edges, (size_t)++tree[k-1].edges_size * sizeof(int));
 									tree[k-1].edges[ edge_index ].to = k;
 									tree[k-1].edges[ edge_index ].size = min_value;
+								}else{
+
 								}
 							}
 						}
