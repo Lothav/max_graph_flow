@@ -37,9 +37,22 @@ int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** p
 	return -1;
 }
 
+int getMinValue(Tree *tree, int size){
+	int min_value = -1, i, j;
+	for(i = 1; i < size; i++){
+		for(j = 0; j < tree[i].edges_size; j++) {
+			if(tree[i-1].edges[j].to == i){
+				min_value = tree[i-1].edges[j].size < min_value || min_value == -1 ? tree[i-1].edges[j].size : min_value;
+				continue;
+			}
+		}
+	}
+	return min_value;
+}
+
 int main() {
 	int V, E, F, C, u, v, m;
-	int i, j;
+	int i, j, k, l, min_value;
 	int *path = NULL;
 	int edge_index;
 	scanf("%d %d %d %d", &V, &E, &F, &C);
@@ -51,8 +64,7 @@ int main() {
 	for(i = 0; i < E; i++) {
 		scanf("%d %d %d", &u, &v, &m);
 		edge_index = tree[u].edges_size;
-		tree[u].edges_size++;
-		tree[u].edges = realloc( tree[u].edges, (size_t)tree[u].edges_size * sizeof(Edge) );
+		tree[u].edges = realloc( tree[u].edges, (size_t)++tree[u].edges_size * sizeof(Edge) );
 		tree[u].edges[ edge_index ].to = v;
 		tree[u].edges[ edge_index ].size = m;
 	}
@@ -67,8 +79,24 @@ int main() {
 
 	for(i = 0; i < V; i++) {
 		for(j = 1; j <= V; j++) {
-			if(tree[i].type == TYPE_FRANCHISE){
-				breadthFirstSearch(tree, i, j, &path);
+			if(tree[i].type == TYPE_FRANCHISE) {
+				if(breadthFirstSearch(tree, i, j, &path) != -1){
+					min_value = getMinValue(tree, j);
+					for(k = 1; k < j; k++) {
+						for(l = 0; l < tree[k].edges_size; l++) {
+							if(tree[k-1].edges[l].to == k){
+								tree[k-1].edges[l].size =- min_value;
+								if(tree[k-1].edges[l].size){
+									edge_index = tree[k-1].edges_size;
+									tree[k-1].edges = realloc(tree[k-1].edges, (size_t)++tree[k-1].edges_size * sizeof(int));
+									tree[k-1].edges[ edge_index ].to = k;
+									tree[k-1].edges[ edge_index ].size = min_value;
+								}
+							}
+						}
+					}
+					printf("asd");
+				}
 			}
 		}
 	}
