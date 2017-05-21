@@ -100,7 +100,6 @@ int main() {
 		scanf("%d %d %d", &u, &v, &m);
 		edge_index = tree[u].edges_size;
 		tree[u].edges = realloc( tree[u].edges, (size_t)(++tree[u].edges_size) * sizeof(Edge) );
-		tree[u].edges_size++;
 		tree[u].edges[ edge_index ].to = v;
 		tree[u].edges[ edge_index ].size = m;
 	}
