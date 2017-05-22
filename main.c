@@ -16,10 +16,10 @@ typedef struct Tree {
 	int edges_size;
 } Tree;
 
-int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** path){
+int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** path, int path_size){
 	int i, r_value, to;
 	if(tree[tree_index].type == TYPE_CLIENT){
-		(*path) = malloc((recursion_index+1) * sizeof(int));
+		(*path) = malloc((path_size+1) * sizeof(int));
 		(*path)[recursion_index] = tree_index;
 		return tree_index;
 	}
@@ -27,7 +27,7 @@ int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** p
 		for (i = 0; i < tree[tree_index].edges_size; i++) {
 			if (!tree[tree_index].edges[i].size) continue;
 			to = tree[tree_index].edges[i].to;
-			r_value = breadthFirstSearch(tree, to, recursion_index - 1, path);
+			r_value = breadthFirstSearch(tree, to, recursion_index - 1, path, path_size);
 			if (r_value == to && path != NULL) {
 				(*path)[recursion_index] = tree_index;
 				return tree_index;
@@ -71,12 +71,9 @@ void setGraphWithMinValues(Tree *tree, int size, int **path, int min_value){
 					tree[index].edges[ edge_index ].size += min_value;
 				} else {
 					tree[index].edges_size++;
-					tree[index].edges = realloc(tree[index].edges, (size_t)(++tree[index].edges_size) * sizeof(Edge));
+					tree[index].edges = realloc(tree[index].edges, (size_t)(++tree[index].edges_size + 15) * sizeof(Edge));
 					tree[index].edges[ edge_index ].to = b_index;
 					tree[index].edges[ edge_index ].size = min_value;
-				}
-				if(min_value < 0){
-					printf("lool");
 				}
 				break;
 			}
@@ -116,7 +113,7 @@ int main() {
 	for(i = 0; i < V; i++) {
 		if(tree[i].type == TYPE_FRANCHISE) {
 			for(j = 1; j < V; j++) {
-				if( breadthFirstSearch(tree, i, j, &path) != -1 ){
+				if( breadthFirstSearch(tree, i, j, &path, j) != -1 ){
 					min_value = getMinValue(tree, j, &path);
 					total += min_value;
 					setGraphWithMinValues(tree, j, &path, min_value);
@@ -131,7 +128,7 @@ int main() {
 	}
 	for(i = 0; i < V; i++) free(tree[i].edges);
 	free(tree);
-
+	free(path);
 	printf("%d", total);
 	return EXIT_SUCCESS;
 }
