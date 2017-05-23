@@ -20,6 +20,10 @@ typedef struct Tree {
 	int edges_size;
 } Tree;
 
+// main search that will find the path
 int breadthFirstSearch(Tree *tree, int tree_index, int recursion_index, int ** path, int path_size);
+
+// set the graph with backwards edges values
 void setGraphWithMinValues(Tree *tree, int size, int **path, int min_value);
+
 #endif //MAX_GRAPH_FLOW_GRAPH_H
